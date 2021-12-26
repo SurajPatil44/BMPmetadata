@@ -23,10 +23,10 @@ enum HeaderError {
 
 impl BmpHeader {
     fn get_header(buffer: &[u8]) -> Result<BmpHeader, HeaderError> {
-        let sig = &buffer[..2];
-        match (sig[0], sig[1]) {
-            (66, 77) => (),
-            (_, _) => {
+        //let sig = &buffer[..2];
+        match &buffer[..2] {
+            b"BM" => (),
+            _  => {
                 return Err(HeaderError::InvalidSignature {
                     msg: String::from("Not a BMP file"),
                 })
@@ -37,7 +37,7 @@ impl BmpHeader {
         let res = LittleEndian::read_u32(&buffer[6..10]);
         let doff = LittleEndian::read_u32(&buffer[10..14]);
         Ok(BmpHeader {
-            Signature: [sig[0], sig[1]],
+            Signature: [buffer[0], buffer[1]],
             FileSize: fs,
             Reserved: res,
             DataOffset: doff,
